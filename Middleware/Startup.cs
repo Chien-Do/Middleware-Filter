@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Middleware.Filters;
 using Middleware.Middlewares;
+using Middleware.ModelBinding;
 using System.Globalization;
 
 namespace Middleware
@@ -26,7 +27,10 @@ namespace Middleware
             services.AddControllers();
             services.AddSingleton(typeof(ILogger), typeof(Logger<Startup>));
             services.AddScoped<LoggingFilter>();
-
+            services.AddControllers(config =>
+            {
+                config.ModelBinderProviders.Insert(0, new DateTimeViewModelBinderProvider());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,8 +46,10 @@ namespace Middleware
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
+
                 endpoints.MapControllers();
             });
 

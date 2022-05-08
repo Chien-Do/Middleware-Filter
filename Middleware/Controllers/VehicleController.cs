@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Middleware.ModelBinding;
 using Middleware.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +19,14 @@ namespace Middleware.Controllers
              new VehicleModel
              {
                  Id = 1,
-                 Name = "Toyota"
+                 Name = "Toyota",
+                 CreatedDate  = new System.DateTime(2022,01,01)
              },
              new VehicleModel
              {
                  Id  = 2,
-                 Name = "Vios"
+                 Name = "Vios",
+                 CreatedDate  = new System.DateTime(2021,01,01)
              }
 
             };
@@ -40,5 +43,17 @@ namespace Middleware.Controllers
         {
             return _vehicles.FirstOrDefault(r => r.Id == id);
         }
+
+        [HttpGet("getDateTime")]
+        public List<VehicleModel> GetVehicleByCreatedDate(DateTimeViewModel viewModel)
+        {
+            if (viewModel == null)
+                return new List<VehicleModel>();
+
+
+            return _vehicles.Where(r => r.CreatedDate == viewModel.MyDate).ToList();
+
+        }
+
     }
 }
