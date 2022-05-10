@@ -116,8 +116,7 @@ namespace Middleware
             //});
 
             //UseWhen
-            app.UseWhen(context => context.Request.Query.ContainsKey("test"),
-    appBuilder => HandleUseWhen(appBuilder));
+            app.UseWhen(context => context.Request.Query.ContainsKey("test"), appBuilder => HandleUseWhen(appBuilder));
             app.Run(async context =>
             {
                 await context.Response.WriteAsync("Hello non-Map delegate. <p>");
