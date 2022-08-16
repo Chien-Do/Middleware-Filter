@@ -8,6 +8,5 @@ namespace Middleware.ModelBinding
     public class DateTimeViewModel
     {
         public DateTime MyDate { get; set; }
-
     }
 }

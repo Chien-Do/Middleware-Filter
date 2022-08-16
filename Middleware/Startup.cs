@@ -5,9 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Middleware.Attributes;
 using Middleware.Filters;
 using Middleware.Middlewares;
 using Middleware.ModelBinding;
+using Middleware.Models;
 using System.Globalization;
 
 namespace Middleware
@@ -27,9 +29,14 @@ namespace Middleware
             services.AddControllers();
             services.AddSingleton(typeof(ILogger), typeof(Logger<Startup>));
             services.AddScoped<LoggingFilter>();
+            services.Configure<PositionOptions>(
+         Configuration.GetSection("Position"));
+            services.AddScoped<SampleActionFilterAttribute>();
+
+            
             services.AddControllers(config =>
             {
-                config.ModelBinderProviders.Insert(0, new DateTimeViewModelBinderProvider());
+                config.Filters.Add(typeof(MyGlobalActionFilter));
             });
         }
 
@@ -40,16 +47,17 @@ namespace Middleware
             //TestMapMethod(app);
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/error");
             }
-            app.UseMiddleware<CustomExceptionMiddleware>();
+            
+            app.ConfigureCustomExceptionMiddleware();   // Same with app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
             
             app.UseEndpoints(endpoints =>
             {
-
+                
                 endpoints.MapControllers();
             });
 
@@ -57,21 +65,21 @@ namespace Middleware
  
         private void TestMapMethod(IApplicationBuilder app)
         {
-            //app.Map("/map1", config =>
-            //{
-            //    config.Run(async (context) =>
-            //    {
-            //        await context.Response.WriteAsync("Hello Map 1");
-            //    });
-            //});
+            app.Map("/map1", config =>
+            {
+                config.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync("Hello Map 1");
+                });
+            });
 
-            //app.Map("/map2", config =>
-            //{
-            //    config.Run(async (context) =>
-            //    {
-            //        await context.Response.WriteAsync("Hello Map 2");
-            //    });
-            //});
+            app.Map("/map2", config =>
+            {
+                config.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync("Hello Map 2");
+                });
+            });
 
 
             ////Nesting
@@ -84,7 +92,7 @@ namespace Middleware
             //        { await context.Response.WriteAsync("Hello Level 2A1"); });
             //    });
             //    // /level1/level2b
-            //    level1App.Map("/level2b", level2BApp =>
+            //    level1App.Map("/level2b", level2BApp => 
             //    {
             //        level2BApp.Run(async (context) =>
             //        { await context.Response.WriteAsync("Hello Level 2B"); });
@@ -94,20 +102,21 @@ namespace Middleware
             //    { await context.Response.WriteAsync("Hello Level 1"); });
             //});
 
-            ////Multi segment
-            //app.Map("/level1/level2a", level1 =>
-            //{
-            //    level1.Run(async (context) =>
-            //    {
-            //        await context.Response.WriteAsync("Hello Level 2A2");
-            //    });
-            //});
+            //Multi segment
+            app.Map("/level1/level2a", level1 =>
+            {
+                level1.Use(async (context, next) =>
+                {
+                    await context.Response.WriteAsync("Hello Level 2A2");
+
+                });
+            });
 
             // MapWhen
 
             //app.MapWhen(r => r.Request.Query.ContainsKey("test"), app =>
             //{
-            //    app.Use(async (context,next) =>
+            //    app.Use(async (context, next) =>
             //    {
             //        var val = context.Request.Query["test"];
             //        await context.Response.WriteAsync($"test val = {val}");
@@ -116,11 +125,8 @@ namespace Middleware
             //});
 
             //UseWhen
-            app.UseWhen(context => context.Request.Query.ContainsKey("test"), appBuilder => HandleUseWhen(appBuilder));
-            app.Run(async context =>
-            {
-                await context.Response.WriteAsync("Hello non-Map delegate. <p>");
-            });
+           // app.UseWhen(context => context.Request.Query.ContainsKey("test"), appBuilder => HandleUseWhen(appBuilder));
+          
 
         }
         private void HandleUseWhen(IApplicationBuilder app)
@@ -129,13 +135,14 @@ namespace Middleware
             {
                 var val = context.Request.Query["test"];
                 await context.Response.WriteAsync($"test val = {val} \n");
-                await next();
+               await next();
             });
         }
         private void TestMiddlewareFlow(IApplicationBuilder app)
         {
             app.Use(async (context, next) =>
             {
+                
                 await context.Response.WriteAsync("1st - Before - App.Use()\n");
                 await next();
                 await context.Response.WriteAsync("1st - After - App.Use()\n");
@@ -151,10 +158,10 @@ namespace Middleware
                 await context.Response.WriteAsync("1st - App.Run()\n");
             });
             //this one will not excuted
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("2nd - App.Run()");
-            });
+            //app.Run(async (context) =>
+            //{
+            //    await context.Response.WriteAsync("2nd - App.Run()");
+            //});
         }
 
 
