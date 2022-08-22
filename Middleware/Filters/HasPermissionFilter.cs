@@ -75,8 +75,6 @@ namespace Middleware.Filters
             {
                 throw new Exception("EntityPermission check not called");
             }
-
-
         }
 
         public void OnActionExecuting(ActionExecutingContext context)

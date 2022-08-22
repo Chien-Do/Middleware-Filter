@@ -1,0 +1,27 @@
+[
+{
+	"id":1,
+	"username":"staff",
+	"password":"123456",
+	"permissions":[
+	"Staff"
+	]
+},
+{
+	"id":2,
+	"username":"investor",
+	"password":"123456",
+	"permissions":[
+		"Investor"
+	]
+},
+{
+	"id":3,
+	"username":"admin",
+	"password":"123456",
+	"permissions":[
+		"Investor",
+		"Staff"
+	]
+}
+]

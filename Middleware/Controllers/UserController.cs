@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Middleware.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UsersController : ControllerBase

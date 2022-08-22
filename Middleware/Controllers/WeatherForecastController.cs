@@ -31,8 +31,8 @@ namespace Middleware.Controllers
             _logger = logger;
         }
         [HttpGet()]
-        //[IgnoreStatusAttribute]
-        //[ServiceFilter(typeof(LoggingFilter))]
+        [IgnoreStatusAttribute]
+        [ServiceFilter(typeof(LoggingFilter))]
         public IEnumerable<WeatherForecast> Get()
         {
             // new AccessViolationException("Violation Exception while accessing the resource.");
@@ -48,7 +48,7 @@ namespace Middleware.Controllers
 
         [HttpGet("testFitler")]
         [SampleActionFilter()]
-        [HasPermissionFilter("Staff")]
+
 
         public string FilterTest()
         {
@@ -69,7 +69,7 @@ namespace Middleware.Controllers
         }
 
         [HttpGet("testPermission")]
-
+        [HasPermissionFilter("Staff")]
         public string TestHasPermission()
         {
             _logger.LogInformation($" Endpoint - {MethodBase.GetCurrentMethod()}");

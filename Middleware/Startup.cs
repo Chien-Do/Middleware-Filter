@@ -46,7 +46,7 @@ namespace Middleware
 
             services.AddControllers(config =>
             {
-                // config.Filters.Add(typeof(MyGlobalActionFilter));
+                config.Filters.Add(typeof(MyGlobalActionFilter));
             });
         }
 
