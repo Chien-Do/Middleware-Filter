@@ -54,9 +54,9 @@ namespace Middleware.Middlewares
         {
             RouteBuilder builder = new RouteBuilder(app);
 
-            AddAddressesRoute(app, builder);
+            //AddAddressesRoute(app, builder);
 
-            app.UseRouter(builder.Build());
+            //app.UseRouter(builder.Build());
 
             return app;
         }

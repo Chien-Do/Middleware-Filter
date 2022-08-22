@@ -29,8 +29,8 @@ namespace Middleware.Controllers
             _logger = logger;
         }
         [HttpGet()]
-        [IgnoreStatusAttribute]
-        [ServiceFilter(typeof(LoggingFilter))]
+        //[IgnoreStatusAttribute]
+        //[ServiceFilter(typeof(LoggingFilter))]
         public IEnumerable<WeatherForecast> Get()
         {
             // new AccessViolationException("Violation Exception while accessing the resource.");
@@ -45,23 +45,33 @@ namespace Middleware.Controllers
         }
 
         [HttpGet("testFitler")]
-        [SampleActionFilter()]  
+        [SampleActionFilter()]
+        //[HasPermissionFilter("Investor")]
+
         public string FilterTest()
         {
             _logger.LogInformation($" Endpoint - {MethodBase.GetCurrentMethod()}");
             return $" Endpoint - {MethodBase.GetCurrentMethod()}";
         }
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
-            base.OnActionExecuting(context);
-        }
+        //public override void OnActionExecuting(ActionExecutingContext context)
+        //{
+        //    _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
+        //    base.OnActionExecuting(context);
+        //}
 
-        public override void OnActionExecuted(ActionExecutedContext context)
+        //public override void OnActionExecuted(ActionExecutedContext context)
+        //{
+        //    _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
+        //    base.OnActionExecuted(context);
+        //}
+
+        [HttpGet("testPermission")]
+
+        public string TestHasPermission()
         {
-            _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
-            base.OnActionExecuted(context);
+            _logger.LogInformation($" Endpoint - {MethodBase.GetCurrentMethod()}");
+            return $" Endpoint - {MethodBase.GetCurrentMethod()}";
         }
     }
 }

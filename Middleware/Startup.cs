@@ -34,18 +34,17 @@ namespace Middleware
             services.Configure<PositionOptions>(
          Configuration.GetSection("Position"));
             services.AddScoped<SampleActionFilterAttribute>();
-
             
             services.AddControllers(config =>
             {
-                config.Filters.Add(typeof(MyGlobalActionFilter));
+               // config.Filters.Add(typeof(MyGlobalActionFilter));
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseAddresses();
+            //app.UseAddresses();
 
             //TestMapMethod(app);
             //TestMiddlewareFlow(app);
@@ -59,7 +58,10 @@ namespace Middleware
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            //app.UseAuthentication();
             app.UseAuthorization();
+
+            //app.UseMiddleware<SessionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 

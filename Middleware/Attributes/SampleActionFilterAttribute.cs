@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Middleware.Attributes
 {
@@ -26,6 +27,8 @@ namespace Middleware.Attributes
             {
                 _logger.LogInformation($" Filter Atrribute - {MethodBase.GetCurrentMethod()}");
             }
+
+           
         }
     }
 }
