@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,9 +9,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Middleware.Attributes;
 using Middleware.Filters;
+using Middleware.Helpers;
 using Middleware.Middlewares;
 using Middleware.ModelBinding;
 using Middleware.Models;
+using Middleware.Services;
 using System.Globalization;
 using System.Net.Http;
 
@@ -28,16 +31,22 @@ namespace Middleware
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddControllers();
+
+            services.AddAuthentication("BasicAuthentication")
+              .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
             services.AddSingleton(typeof(ILogger), typeof(Logger<Startup>));
+
+            services.AddSingleton<IUserService, UserService>();
             services.AddScoped<LoggingFilter>();
             services.Configure<PositionOptions>(
          Configuration.GetSection("Position"));
             services.AddScoped<SampleActionFilterAttribute>();
-            
+
             services.AddControllers(config =>
             {
-               // config.Filters.Add(typeof(MyGlobalActionFilter));
+                // config.Filters.Add(typeof(MyGlobalActionFilter));
             });
         }
 
@@ -52,25 +61,30 @@ namespace Middleware
             {
                 app.UseExceptionHandler("/error");
             }
-            
+
             app.ConfigureCustomExceptionMiddleware();   // Same with app.UseMiddleware<CustomExceptionMiddleware>();
 
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            //app.UseAuthentication();
+            app.UseCors(x => x
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            //app.UseMiddleware<SessionMiddleware>();
+            app.UseMiddleware<SessionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
-                
+
                 endpoints.MapControllers();
             });
-            
+
 
         }
- 
+
         private void TestMapMethod(IApplicationBuilder app)
         {
             app.Map("/map1", config =>
@@ -153,16 +167,16 @@ namespace Middleware
             {
                 var val = context.Request.Query["test"];
                 await context.Response.WriteAsync($"test val = {val} \n");
-               await next();
+                await next();
             });
         }
-   
-      
+
+
         private void TestMiddlewareFlow(IApplicationBuilder app)
         {
             app.Use(async (context, next) =>
             {
-                
+
                 await context.Response.WriteAsync("1st - Before - App.Use()\n");
                 await next();
                 await context.Response.WriteAsync("1st - After - App.Use()\n");

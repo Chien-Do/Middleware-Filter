@@ -2,6 +2,7 @@
 using Middleware.Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace Middleware.Filters
                 return PermissionEnum.Unauthorized;
             }
 
-            var session = (Dictionary<string,string>)httpContext.Items["Session"];
+            var session = (Dictionary<string,string[]>)httpContext.Items["Session"];
 
             if (session == null)
             {
@@ -38,14 +39,14 @@ namespace Middleware.Filters
             }
             
 
-            //var intersect = permissions.Intersect(userPermissions);
+            var intersect = permissions.Intersect(session["Permission"]);
 
-            //if (!intersect.Any())
-            //{
-            //    return PermissionEnum.Forbidden;
-            //}
+            if (!intersect.Any())
+            {
+                return PermissionEnum.Forbidden;
+            }
 
-           
+
 
             return PermissionEnum.Authorized;
         }

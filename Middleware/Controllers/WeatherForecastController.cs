@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Docs.Samples;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Middleware.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : Controller
@@ -46,7 +48,7 @@ namespace Middleware.Controllers
 
         [HttpGet("testFitler")]
         [SampleActionFilter()]
-        //[HasPermissionFilter("Investor")]
+        [HasPermissionFilter("Staff")]
 
         public string FilterTest()
         {
@@ -54,17 +56,17 @@ namespace Middleware.Controllers
             return $" Endpoint - {MethodBase.GetCurrentMethod()}";
         }
 
-        //public override void OnActionExecuting(ActionExecutingContext context)
-        //{
-        //    _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
-        //    base.OnActionExecuting(context);
-        //}
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
+            base.OnActionExecuting(context);
+        }
 
-        //public override void OnActionExecuted(ActionExecutedContext context)
-        //{
-        //    _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
-        //    base.OnActionExecuted(context);
-        //}
+        public override void OnActionExecuted(ActionExecutedContext context)
+        {
+            _logger.LogInformation($" Controller - {MethodBase.GetCurrentMethod()}");
+            base.OnActionExecuted(context);
+        }
 
         [HttpGet("testPermission")]
 
