@@ -29,18 +29,19 @@ namespace Middleware.Controllers
             _logger = logger;
         }
         [HttpGet()]
+        [IgnoreStatusAttribute]
         [ServiceFilter(typeof(LoggingFilter))]
         public IEnumerable<WeatherForecast> Get()
-        {   
-            throw new AccessViolationException("Violation Exception while accessing the resource.");
-            //var rng = new Random();
-            //return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            //{
-            //    Date = DateTime.Now.AddDays(index),
-            //    TemperatureC = rng.Next(-20, 55),
-            //    Summary = Summaries[rng.Next(Summaries.Length)]
-            //})
-            //.ToArray();
+        {
+            // new AccessViolationException("Violation Exception while accessing the resource.");
+            var rng = new Random();
+            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = Summaries[rng.Next(Summaries.Length)]
+            })
+            .ToArray();
         }
 
         [HttpGet("testFitler")]
